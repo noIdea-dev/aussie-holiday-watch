@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AussieHolidayWatch — Australian School &amp; Public Holidays</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #f0f4f8;
+            color: #1a202c;
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ── */
+        header {
+            background: linear-gradient(135deg, #005C2E 0%, #007A3D 100%);
+            color: white;
+            padding: 1.75rem 2rem 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        header h1 { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.5px; }
+        header p { font-size: 1rem; opacity: 0.85; margin-top: 0.3rem; }
+
+        /* ── MAIN ── */
+        main { max-width: 1440px; margin: 0 auto; padding: 1.5rem 1rem 2rem; }
+
+        /* ── CONTROLS ── */
+        .controls {
+            display: flex;
+            align-items: flex-end;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+            background: white;
+            padding: 1.25rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+        }
+        .control-group { display: flex; flex-direction: column; gap: 0.35rem; }
+        .control-group label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+        select {
+            padding: 0.6rem 1rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background: white;
+            cursor: pointer;
+            min-width: 250px;
+            color: #2d3748;
+        }
+        select:focus { outline: none; border-color: #007A3D; box-shadow: 0 0 0 3px rgba(0,122,61,0.1); }
+
+        .year-buttons { display: flex; gap: 0.4rem; }
+        .year-btn {
+            padding: 0.6rem 1.1rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            font-size: 0.95rem;
+            cursor: pointer;
+            color: #4a5568;
+            transition: all 0.15s;
+            font-weight: 500;
+        }
+        .year-btn:hover { border-color: #007A3D; color: #007A3D; }
+        .year-btn.active { background: #007A3D; border-color: #007A3D; color: white; font-weight: 700; }
+
+        .btn-primary {
+            padding: 0.65rem 2rem;
+            background: #007A3D;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+        .btn-primary:hover { background: #005C2E; }
+        .btn-secondary {
+            padding: 0.65rem 1.25rem;
+            background: white;
+            color: #4a5568;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .btn-secondary:hover { border-color: #007A3D; color: #007A3D; }
+
+        /* ── MESSAGE ── */
+        .message {
+            background: #FEF3C7;
+            border: 1px solid #F59E0B;
+            color: #92400E;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        /* ── CALENDAR TITLE ── */
+        .calendar-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #005C2E;
+            margin-bottom: 1rem;
+        }
+
+        /* ── CALENDAR GRID — 4 cols x 3 rows ── */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        /* ── MONTH ── */
+        .month {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+            overflow: hidden;
+        }
+        .month-header {
+            background: #007A3D;
+            color: white;
+            text-align: center;
+            padding: 0.5rem 0.25rem;
+            font-weight: 700;
+            font-size: 0.82rem;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #edf2f7;
+            padding: 1px;
+        }
+        .day-header {
+            background: #f7fafc;
+            text-align: center;
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: #a0aec0;
+            padding: 0.3rem 0;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .day {
+            background: white;
+            text-align: center;
+            font-size: 0.72rem;
+            padding: 0.28rem 0;
+            min-height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            line-height: 1;
+        }
+        .day.empty { background: #f7fafc; }
+        .day.weekend { background: #f7fafc; color: #a0aec0; }
+
+        /* School holiday — amber/gold */
+        .day.school-holiday { background: #FFFBEB; color: #92400E; font-weight: 600; }
+        .day.school-holiday.weekend { background: #FEF3C7; }
+
+        /* Public holiday — blue */
+        .day.public-holiday { background: #EBF8FF; color: #1A365D; font-weight: 600; }
+        .day.public-holiday.weekend { background: #BEE3F8; color: #2C5282; }
+
+        /* Both — public holiday wins background, gold left border marks school holiday overlap */
+        .day.school-holiday.public-holiday {
+            background: #EBF8FF;
+            color: #1A365D;
+            border-left: 3px solid #F59E0B;
+            font-weight: 700;
+        }
+
+        /* Today */
+        .day.today { font-weight: 800; }
+        .day.today:not(.school-holiday):not(.public-holiday) { background: #F0FFF4; color: #276749; }
+        .day.today::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            background: #007A3D;
+            border-radius: 50%;
+        }
+
+        /* ── LEGEND ── */
+        .legend {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
+            font-size: 0.85rem;
+            color: #4a5568;
+        }
+        .legend-item { display: flex; align-items: center; gap: 0.5rem; }
+        .swatch { width: 22px; height: 22px; border-radius: 4px; }
+        .swatch-school { background: #FFFBEB; border: 1.5px solid #F59E0B; }
+        .swatch-public { background: #EBF8FF; border: 1.5px solid #63B3ED; }
+        .swatch-both { background: #EBF8FF; border: 1.5px solid #63B3ED; border-left: 4px solid #F59E0B; }
+        .swatch-today { background: #F0FFF4; border: 1.5px solid #007A3D; }
+
+        /* ── HOLIDAY LIST ── */
+        .holiday-list {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .holiday-list-sections { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .holiday-section h3 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.6rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 2px solid;
+        }
+        .holiday-section.school h3 { color: #92400E; border-color: #F59E0B; }
+        .holiday-section.public h3 { color: #1A365D; border-color: #63B3ED; }
+        .period-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 0.3rem 0;
+            font-size: 0.82rem;
+            border-bottom: 1px solid #f7fafc;
+            gap: 0.5rem;
+        }
+        .period-item:last-child { border-bottom: none; }
+        .period-name { font-weight: 600; color: #2d3748; }
+        .period-dates { color: #718096; white-space: nowrap; font-size: 0.78rem; }
+
+        /* ── FOOTER ── */
+        footer {
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.78rem;
+            color: #a0aec0;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 0.5rem;
+            line-height: 1.6;
+        }
+
+        /* ── HIDDEN ── */
+        .hidden { display: none !important; }
+
+        /* ── PRINT-ONLY elements (hidden on screen) ── */
+        .print-only { display: none; }
+
+        /* ══════════════════════════════════════════
+           PRINT STYLES — A4 Landscape
+        ══════════════════════════════════════════ */
+        @media print {
+            @page { size: A4 landscape; margin: 7mm; }
+
+            body { background: white; }
+            header, .controls, .message, .holiday-list, .legend, footer { display: none !important; }
+
+            .print-only { display: block; }
+
+            .print-header {
+                text-align: center;
+                margin-bottom: 4mm;
+            }
+            .print-header h2 { font-size: 13pt; font-weight: 800; color: #005C2E; }
+            .print-header p { font-size: 8pt; color: #666; margin-top: 1mm; }
+
+            main { padding: 0; max-width: 100%; }
+            .calendar-title { display: none !important; }
+
+            .calendar-grid {
+                display: grid !important;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 2.5px;
+            }
+
+            .month { box-shadow: none; border: 0.5pt solid #ccc; break-inside: avoid; }
+            .month-header {
+                background: #007A3D !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                color: white !important;
+                padding: 2px;
+                font-size: 6pt;
+            }
+            .month-grid { gap: 0.5px; }
+            .day-header { font-size: 5pt; padding: 1px 0; }
+            .day { font-size: 6pt; padding: 1px 0; min-height: 12px; }
+
+            .day.school-holiday {
+                background: #FFFBEB !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .day.public-holiday {
+                background: #EBF8FF !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .day.school-holiday.public-holiday {
+                background: #EBF8FF !important;
+                border-left: 2pt solid #F59E0B !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .day.weekend { background: #f7fafc !important; }
+            .day.today::after { display: none; }
+
+            .print-legend {
+                display: flex !important;
+                gap: 8mm;
+                justify-content: center;
+                margin-top: 3mm;
+                font-size: 7pt;
+            }
+            .print-legend-item { display: flex; align-items: center; gap: 2mm; }
+            .print-swatch {
+                width: 8px; height: 8px;
+                display: inline-block;
+                border: 0.5pt solid #999;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .print-swatch-school { background: #FFFBEB; border-color: #F59E0B; }
+            .print-swatch-public { background: #EBF8FF; border-color: #63B3ED; }
+
+            .print-updated {
+                display: block !important;
+                text-align: center;
+                font-size: 6pt;
+                color: #999;
+                margin-top: 2mm;
+            }
+        }
+
+        /* ══════════════════════════════════════════
+           RESPONSIVE
+        ══════════════════════════════════════════ */
+        @media (max-width: 1100px) { .calendar-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 800px)  { .calendar-grid { grid-template-columns: repeat(2, 1fr); } .holiday-list-sections { grid-template-columns: 1fr; } }
+        @media (max-width: 520px)  { .calendar-grid { grid-template-columns: 1fr; } header h1 { font-size: 1.5rem; } select { min-width: 180px; } }
+    </style>
+</head>
+<body>
+
+<!-- Print-only header (hidden on screen, shown when printing) -->
+<div class="print-only">
+    <div class="print-header">
+        <h2 id="printTitle">AussieHolidayWatch</h2>
+        <p id="printSubtitle">School &amp; Public Holiday Calendar</p>
+    </div>
+</div>
+
+<header>
+    <h1>AussieHolidayWatch</h1>
+    <p>Australian School &amp; Public Holidays — Any State, Any Year</p>
+</header>
+
+<main>
+    <div class="controls">
+        <div class="control-group">
+            <label for="stateSelect">State / Territory</label>
+            <select id="stateSelect">
+                <option value="">— Select a state —</option>
+                <option value="NSW">New South Wales</option>
+                <option value="VIC">Victoria</option>
+                <option value="QLD">Queensland</option>
+                <option value="WA">Western Australia</option>
+                <option value="SA">South Australia</option>
+                <option value="TAS">Tasmania</option>
+                <option value="ACT">Australian Capital Territory</option>
+                <option value="NT">Northern Territory</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>Year</label>
+            <div class="year-buttons" id="yearButtons"></div>
+        </div>
+        <button class="btn-primary" id="showMeBtn">Show Me</button>
+        <button class="btn-secondary hidden" id="printBtn">&#128424; Print A4</button>
+    </div>
+
+    <div class="message hidden" id="message"></div>
+    <div class="calendar-title hidden" id="calendarTitle"></div>
+    <div class="calendar-grid hidden" id="calendar"></div>
+
+    <div class="legend hidden" id="legend">
+        <span class="legend-item"><span class="swatch swatch-school"></span> School Holiday</span>
+        <span class="legend-item"><span class="swatch swatch-public"></span> Public Holiday</span>
+        <span class="legend-item"><span class="swatch swatch-both"></span> Both</span>
+        <span class="legend-item"><span class="swatch swatch-today"></span> Today</span>
+    </div>
+
+    <div class="holiday-list hidden" id="holidayList">
+        <div class="holiday-list-sections">
+            <div class="holiday-section school">
+                <h3>School Holidays</h3>
+                <div id="schoolPeriodsList"></div>
+            </div>
+            <div class="holiday-section public">
+                <h3>Public Holidays</h3>
+                <div id="publicHolidaysList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print-only legend and footer line -->
+    <div class="print-only print-legend">
+        <div class="print-legend-item"><span class="print-swatch print-swatch-school"></span> School Holiday</div>
+        <div class="print-legend-item"><span class="print-swatch print-swatch-public"></span> Public Holiday</div>
+    </div>
+    <span class="print-only print-updated" id="printUpdated"></span>
+</main>
+
+<footer>
+    <p id="footerLine">Data last updated: 9 October 2026</p>
+    <p>School holiday sources: State education department websites. Public holiday sources: Fair Work Ombudsman &amp; state government websites.</p>
+    <p>Always verify important dates with your state's official education department or government website before making plans.</p>
+</footer>
+
+<script>
+// ================================================================
+// SCHOOL HOLIDAY DATA
+// Source: State education department websites
+// Last verified: 9 October 2026
+// Note: 2027 data for ACT/NT Term 2/3 breaks is estimated from
+// prior-year patterns. Verify before relying on specific dates.
+// ================================================================
+const SCHOOL_HOLIDAYS = {
+    "2025": {
+        "NSW": { name: "New South Wales", periods: [
+            { label: "Summer Holidays",  start: "2025-01-01", end: "2025-02-03" },
+            { label: "Term 1 Holidays",  start: "2025-04-12", end: "2025-04-28" },
+            { label: "Term 2 Holidays",  start: "2025-07-05", end: "2025-07-21" },
+            { label: "Term 3 Holidays",  start: "2025-09-27", end: "2025-10-13" },
+            { label: "Summer Holidays",  start: "2025-12-20", end: "2025-12-31" }
+        ]},
+        "VIC": { name: "Victoria", periods: [
+            { label: "Summer Holidays",  start: "2025-01-01", end: "2025-01-28" },
+            { label: "Term 1 Holidays",  start: "2025-04-05", end: "2025-04-21" },
+            { label: "Term 2 Holidays",  start: "2025-06-28", end: "2025-07-13" },
+            { label: "Term 3 Holidays",  start: "2025-09-20", end: "2025-10-05" },
+            { label: "Summer Holidays",  start: "2025-12-20", end: "2025-12-31" }
+        ]},
+        "QLD": { name: "Queensland", periods: [
+            { label: "Summer Holidays",  start: "2025-01-01", end: "2025-01-27" },
+            { label: "Term 1 Holidays",  start: "2025-04-05", end: "2025-04-27" },
+            { label: "Term 2 Holidays",  start: "2025-06-28", end: "2025-07-13" },
+            { label: "Term 3 Holidays",  start: "2025-09-20", end: "2025-10-06" },
+            { label: "Summer Holidays",  start: "2025-12-13", end: "2025-12-31" }
+        ]},
+        "WA": { name: "Western Australia", periods: [
+            { label: "Summer Holidays",  start: "2025-01-01", end: "2025-02-02" },
+            { label: "Term 1 Holidays",  start: "2025-04-12", end: "2025-04-27" },
+            { label: "Term 2 Holidays",  start: "2025-07-05", end: "2025-07-20" },
+            { label: "Term 3 Holidays",  start: "2025-09-27", end: "2025-10-12" },
+            { label: "Summer Holidays",  start: "2025-12-19", end: "2025-12-31" }
+        ]},
+        "SA": { name: "South Australia", periods: [
+            { label: "Summer Holidays",  start: "2025-01-01", end: "2025-01-27" },
+            { label: "Term 1 Holidays",  start: "2025-04-12", end: "2025-04-27" },
+            { label: "Term 2 Holidays",  start: "2025-07-05", end: "2025-07-20" },
+            { label: "Term 3 Holidays",  start: "2025-09-27", end: "2025-10-12" },
+            { label: "Summer Holidays",  start: "2025-12-13", end: "2025-12-31" }
+        ]},
+        "TAS": { name: "Tasmania", periods: [
+            { label: "Summer Holidays",  start: "2025-01-01", end: "2025-02-05" },
+            { label: "Term 1 Holidays",  start: "2025-04-12", end: "2025-04-27" },
+            { label: "Term 2 Holidays",  start: "2025-07-05", end: "2025-07-20" },
+            { label: "Term 3 Holidays",  start: "2025-09-27", end: "2025-10-12" },
+            { label: "Summer Holidays",  start: "2025-12-19", end: "2025-12-31" }
+        ]},
+        "ACT": { name: "Australian Capital Territory", periods: [
+            { label: "Summer Holidays",  start: "2025-01-01", end: "2025-02-02" },
+            { label: "Term 1 Holidays",  start: "2025-04-12", end: "2025-04-28" },
+            { label: "Term 2 Holidays",  start: "2025-07-05", end: "2025-07-21" },
+            { label: "Term 3 Holidays",  start: "2025-09-27", end: "2025-10-13" },
+            { label: "Summer Holidays",  start: "2025-12-19", end: "2025-12-31" }
+        ]},
+        "NT": { name: "Northern Territory", periods: [
+            { label: "Summer Holidays",  start: "2025-01-01", end: "2025-01-28" },
+            { label: "Term 1 Holidays",  start: "2025-04-05", end: "2025-04-14" },
+            { label: "Term 2 Holidays",  start: "2025-06-21", end: "2025-07-14" },
+            { label: "Term 3 Holidays",  start: "2025-09-20", end: "2025-10-06" },
+            { label: "Summer Holidays",  start: "2025-12-12", end: "2025-12-31" }
+        ]}
+    },
+    "2026": {
+        "NSW": { name: "New South Wales", periods: [
+            { label: "Summer Holidays",  start: "2026-01-01", end: "2026-02-01" },
+            { label: "Term 1 Holidays",  start: "2026-04-03", end: "2026-04-21" },
+            { label: "Term 2 Holidays",  start: "2026-07-04", end: "2026-07-20" },
+            { label: "Term 3 Holidays",  start: "2026-09-26", end: "2026-10-12" },
+            { label: "Summer Holidays",  start: "2026-12-18", end: "2026-12-31" }
+        ]},
+        "VIC": { name: "Victoria", periods: [
+            { label: "Summer Holidays",  start: "2026-01-01", end: "2026-01-26" },
+            { label: "Term 1 Holidays",  start: "2026-04-03", end: "2026-04-19" },
+            { label: "Term 2 Holidays",  start: "2026-06-27", end: "2026-07-12" },
+            { label: "Term 3 Holidays",  start: "2026-09-19", end: "2026-10-04" },
+            { label: "Summer Holidays",  start: "2026-12-19", end: "2026-12-31" }
+        ]},
+        "QLD": { name: "Queensland", periods: [
+            { label: "Summer Holidays",  start: "2026-01-01", end: "2026-01-26" },
+            { label: "Term 1 Holidays",  start: "2026-04-03", end: "2026-04-19" },
+            { label: "Term 2 Holidays",  start: "2026-06-27", end: "2026-07-12" },
+            { label: "Term 3 Holidays",  start: "2026-09-19", end: "2026-10-05" },
+            { label: "Summer Holidays",  start: "2026-12-12", end: "2026-12-31" }
+        ]},
+        "WA": { name: "Western Australia", periods: [
+            { label: "Summer Holidays",  start: "2026-01-01", end: "2026-02-01" },
+            { label: "Term 1 Holidays",  start: "2026-04-03", end: "2026-04-19" },
+            { label: "Term 2 Holidays",  start: "2026-07-04", end: "2026-07-19" },
+            { label: "Term 3 Holidays",  start: "2026-09-26", end: "2026-10-11" },
+            { label: "Summer Holidays",  start: "2026-12-18", end: "2026-12-31" }
+        ]},
+        "SA": { name: "South Australia", periods: [
+            { label: "Summer Holidays",  start: "2026-01-01", end: "2026-01-26" },
+            { label: "Term 1 Holidays",  start: "2026-04-11", end: "2026-04-26" },
+            { label: "Term 2 Holidays",  start: "2026-07-04", end: "2026-07-19" },
+            { label: "Term 3 Holidays",  start: "2026-09-26", end: "2026-10-11" },
+            { label: "Summer Holidays",  start: "2026-12-12", end: "2026-12-31" }
+        ]},
+        "TAS": { name: "Tasmania", periods: [
+            { label: "Summer Holidays",  start: "2026-01-01", end: "2026-02-04" },
+            { label: "Term 1 Holidays",  start: "2026-04-18", end: "2026-05-03" },
+            { label: "Term 2 Holidays",  start: "2026-07-11", end: "2026-07-26" },
+            { label: "Term 3 Holidays",  start: "2026-10-03", end: "2026-10-18" },
+            { label: "Summer Holidays",  start: "2026-12-19", end: "2026-12-31" }
+        ]},
+        "ACT": { name: "Australian Capital Territory", periods: [
+            { label: "Summer Holidays",  start: "2026-01-01", end: "2026-01-29" },
+            { label: "Term 1 Holidays",  start: "2026-04-03", end: "2026-04-20" },
+            { label: "Term 2 Holidays",  start: "2026-07-04", end: "2026-07-20" },
+            { label: "Term 3 Holidays",  start: "2026-09-26", end: "2026-10-12" },
+            { label: "Summer Holidays",  start: "2026-12-19", end: "2026-12-31" }
+        ]},
+        "NT": { name: "Northern Territory", periods: [
+            { label: "Summer Holidays",  start: "2026-01-01", end: "2026-01-28" },
+            { label: "Term 1 Holidays",  start: "2026-04-03", end: "2026-04-13" },
+            { label: "Term 2 Holidays",  start: "2026-06-20", end: "2026-07-13" },
+            { label: "Term 3 Holidays",  start: "2026-09-19", end: "2026-10-05" },
+            { label: "Summer Holidays",  start: "2026-12-11", end: "2026-12-31" }
+        ]}
+    },
+    "2027": {
+        "NSW": { name: "New South Wales", periods: [
+            { label: "Summer Holidays",  start: "2027-01-01", end: "2027-02-02" },
+            { label: "Term 1 Holidays",  start: "2027-04-10", end: "2027-04-25" },
+            { label: "Term 2 Holidays",  start: "2027-07-05", end: "2027-07-16" },
+            { label: "Term 3 Holidays",  start: "2027-09-27", end: "2027-10-08" },
+            { label: "Summer Holidays",  start: "2027-12-21", end: "2027-12-31" }
+        ]},
+        "VIC": { name: "Victoria", periods: [
+            { label: "Summer Holidays",  start: "2027-01-01", end: "2027-01-26" },
+            { label: "Term 1 Holidays",  start: "2027-03-26", end: "2027-04-11" },
+            { label: "Term 2 Holidays",  start: "2027-06-26", end: "2027-07-11" },
+            { label: "Term 3 Holidays",  start: "2027-09-18", end: "2027-10-03" },
+            { label: "Summer Holidays",  start: "2027-12-18", end: "2027-12-31" }
+        ]},
+        "QLD": { name: "Queensland", periods: [
+            { label: "Summer Holidays",  start: "2027-01-01", end: "2027-01-26" },
+            { label: "Term 1 Holidays",  start: "2027-03-26", end: "2027-04-11" },
+            { label: "Term 2 Holidays",  start: "2027-06-26", end: "2027-07-11" },
+            { label: "Term 3 Holidays",  start: "2027-09-18", end: "2027-10-04" },
+            { label: "Summer Holidays",  start: "2027-12-11", end: "2027-12-31" }
+        ]},
+        "WA": { name: "Western Australia", periods: [
+            { label: "Summer Holidays",  start: "2027-01-01", end: "2027-01-31" },
+            { label: "Term 1 Holidays",  start: "2027-04-10", end: "2027-04-25" },
+            { label: "Term 2 Holidays",  start: "2027-07-03", end: "2027-07-18" },
+            { label: "Term 3 Holidays",  start: "2027-09-25", end: "2027-10-10" },
+            { label: "Summer Holidays",  start: "2027-12-17", end: "2027-12-31" }
+        ]},
+        "SA": { name: "South Australia", periods: [
+            { label: "Summer Holidays",  start: "2027-01-01", end: "2027-01-26" },
+            { label: "Term 1 Holidays",  start: "2027-04-10", end: "2027-04-25" },
+            { label: "Term 2 Holidays",  start: "2027-07-03", end: "2027-07-18" },
+            { label: "Term 3 Holidays",  start: "2027-09-25", end: "2027-10-10" },
+            { label: "Summer Holidays",  start: "2027-12-11", end: "2027-12-31" }
+        ]},
+        "TAS": { name: "Tasmania", periods: [
+            { label: "Summer Holidays",  start: "2027-01-01", end: "2027-02-03" },
+            { label: "Term 1 Holidays",  start: "2027-04-10", end: "2027-04-25" },
+            { label: "Term 2 Holidays",  start: "2027-07-03", end: "2027-07-18" },
+            { label: "Term 3 Holidays",  start: "2027-09-25", end: "2027-10-10" },
+            { label: "Summer Holidays",  start: "2027-12-17", end: "2027-12-31" }
+        ]},
+        "ACT": { name: "Australian Capital Territory", periods: [
+            { label: "Summer Holidays",  start: "2027-01-01", end: "2027-01-31" },
+            { label: "Term 1 Holidays",  start: "2027-04-10", end: "2027-04-27" },
+            { label: "Term 2 Holidays",  start: "2027-07-03", end: "2027-07-19" },
+            { label: "Term 3 Holidays",  start: "2027-09-25", end: "2027-10-11" },
+            { label: "Summer Holidays",  start: "2027-12-18", end: "2027-12-31" }
+        ]},
+        "NT": { name: "Northern Territory", periods: [
+            { label: "Summer Holidays",  start: "2027-01-01", end: "2027-01-26" },
+            { label: "Term 1 Holidays",  start: "2027-04-03", end: "2027-04-12" },
+            { label: "Term 2 Holidays",  start: "2027-06-19", end: "2027-07-12" },
+            { label: "Term 3 Holidays",  start: "2027-09-18", end: "2027-10-04" },
+            { label: "Summer Holidays",  start: "2027-12-10", end: "2027-12-31" }
+        ]}
+    }
+};
+
+// ================================================================
+// PUBLIC HOLIDAY DATA
+// Sources: Fair Work Ombudsman, state government websites
+// Last verified: 9 October 2026
+// ================================================================
+const PUBLIC_HOLIDAYS = {
+    "2025": {
+        "NSW": [
+            { label: "New Year's Day",     date: "2025-01-01" },
+            { label: "Australia Day",      date: "2025-01-27" },
+            { label: "Good Friday",        date: "2025-04-18" },
+            { label: "Easter Saturday",    date: "2025-04-19" },
+            { label: "Easter Monday",      date: "2025-04-21" },
+            { label: "Anzac Day",          date: "2025-04-25" },
+            { label: "King's Birthday",    date: "2025-06-09" },
+            { label: "Bank Holiday",       date: "2025-08-04" },
+            { label: "Christmas Day",      date: "2025-12-25" },
+            { label: "Boxing Day",         date: "2025-12-26" }
+        ],
+        "VIC": [
+            { label: "New Year's Day",     date: "2025-01-01" },
+            { label: "Australia Day",      date: "2025-01-27" },
+            { label: "Labour Day",         date: "2025-03-10" },
+            { label: "Good Friday",        date: "2025-04-18" },
+            { label: "Easter Saturday",    date: "2025-04-19" },
+            { label: "Easter Monday",      date: "2025-04-21" },
+            { label: "Anzac Day",          date: "2025-04-25" },
+            { label: "King's Birthday",    date: "2025-06-09" },
+            { label: "Melbourne Cup Day",  date: "2025-11-04" },
+            { label: "Christmas Day",      date: "2025-12-25" },
+            { label: "Boxing Day",         date: "2025-12-26" }
+        ],
+        "QLD": [
+            { label: "New Year's Day",     date: "2025-01-01" },
+            { label: "Australia Day",      date: "2025-01-27" },
+            { label: "Good Friday",        date: "2025-04-18" },
+            { label: "Easter Saturday",    date: "2025-04-19" },
+            { label: "Easter Monday",      date: "2025-04-21" },
+            { label: "Anzac Day",          date: "2025-04-25" },
+            { label: "Labour Day",         date: "2025-05-05" },
+            { label: "King's Birthday",    date: "2025-10-06" },
+            { label: "Christmas Day",      date: "2025-12-25" },
+            { label: "Boxing Day",         date: "2025-12-26" }
+        ],
+        "WA": [
+            { label: "New Year's Day",     date: "2025-01-01" },
+            { label: "Australia Day",      date: "2025-01-27" },
+            { label: "Labour Day",         date: "2025-03-03" },
+            { label: "Good Friday",        date: "2025-04-18" },
+            { label: "Easter Monday",      date: "2025-04-21" },
+            { label: "Anzac Day",          date: "2025-04-25" },
+            { label: "Western Australia Day", date: "2025-06-02" },
+            { label: "King's Birthday",    date: "2025-09-29" },
+            { label: "Christmas Day",      date: "2025-12-25" },
+            { label: "Boxing Day",         date: "2025-12-26" }
+        ],
+        "SA": [
+            { label: "New Year's Day",     date: "2025-01-01" },
+            { label: "Australia Day",      date: "2025-01-27" },
+            { label: "Adelaide Cup",       date: "2025-03-10" },
+            { label: "Good Friday",        date: "2025-04-18" },
+            { label: "Easter Saturday",    date: "2025-04-19" },
+            { label: "Easter Sunday",      date: "2025-04-20" },
+            { label: "Easter Monday",      date: "2025-04-21" },
+            { label: "Anzac Day",          date: "2025-04-25" },
+            { label: "King's Birthday",    date: "2025-06-09" },
+            { label: "Labour Day",         date: "2025-10-06" },
+            { label: "Christmas Day",      date: "2025-12-25" },
+            { label: "Proclamation Day",   date: "2025-12-26" }
+        ],
+        "TAS": [
+            { label: "New Year's Day",     date: "2025-01-01" },
+            { label: "Australia Day",      date: "2025-01-27" },
+            { label: "Eight Hours Day",    date: "2025-03-10" },
+            { label: "Good Friday",        date: "2025-04-18" },
+            { label: "Easter Saturday",    date: "2025-04-19" },
+            { label: "Easter Monday",      date: "2025-04-21" },
+            { label: "Easter Tuesday",     date: "2025-04-22" },
+            { label: "Anzac Day",          date: "2025-04-25" },
+            { label: "King's Birthday",    date: "2025-06-09" },
+            { label: "Christmas Day",      date: "2025-12-25" },
+            { label: "Boxing Day",         date: "2025-12-26" }
+        ],
+        "ACT": [
+            { label: "New Year's Day",     date: "2025-01-01" },
+            { label: "Australia Day",      date: "2025-01-27" },
+            { label: "Canberra Day",       date: "2025-03-10" },
+            { label: "Good Friday",        date: "2025-04-18" },
+            { label: "Easter Saturday",    date: "2025-04-19" },
+            { label: "Easter Monday",      date: "2025-04-21" },
+            { label: "Anzac Day",          date: "2025-04-25" },
+            { label: "Reconciliation Day", date: "2025-05-26" },
+            { label: "King's Birthday",    date: "2025-06-09" },
+            { label: "Labour Day",         date: "2025-10-06" },
+            { label: "Christmas Day",      date: "2025-12-25" },
+            { label: "Boxing Day",         date: "2025-12-26" }
+        ],
+        "NT": [
+            { label: "New Year's Day",     date: "2025-01-01" },
+            { label: "Australia Day",      date: "2025-01-27" },
+            { label: "Good Friday",        date: "2025-04-18" },
+            { label: "Easter Saturday",    date: "2025-04-19" },
+            { label: "Easter Sunday",      date: "2025-04-20" },
+            { label: "Easter Monday",      date: "2025-04-21" },
+            { label: "Anzac Day",          date: "2025-04-25" },
+            { label: "King's Birthday",    date: "2025-06-09" },
+            { label: "Picnic Day",         date: "2025-08-04" },
+            { label: "Christmas Day",      date: "2025-12-25" },
+            { label: "Boxing Day",         date: "2025-12-26" }
+        ]
+    },
+    "2026": {
+        "NSW": [
+            { label: "New Year's Day",     date: "2026-01-01" },
+            { label: "Australia Day",      date: "2026-01-26" },
+            { label: "Good Friday",        date: "2026-04-03" },
+            { label: "Easter Saturday",    date: "2026-04-04" },
+            { label: "Easter Monday",      date: "2026-04-06" },
+            { label: "Anzac Day",          date: "2026-04-25" },
+            { label: "King's Birthday",    date: "2026-06-08" },
+            { label: "Bank Holiday",       date: "2026-08-03" },
+            { label: "Christmas Day",      date: "2026-12-25" },
+            { label: "Boxing Day",         date: "2026-12-28" }
+        ],
+        "VIC": [
+            { label: "New Year's Day",     date: "2026-01-01" },
+            { label: "Australia Day",      date: "2026-01-26" },
+            { label: "Labour Day",         date: "2026-03-09" },
+            { label: "Good Friday",        date: "2026-04-03" },
+            { label: "Easter Saturday",    date: "2026-04-04" },
+            { label: "Easter Monday",      date: "2026-04-06" },
+            { label: "Anzac Day",          date: "2026-04-25" },
+            { label: "King's Birthday",    date: "2026-06-08" },
+            { label: "Melbourne Cup Day",  date: "2026-11-03" },
+            { label: "Christmas Day",      date: "2026-12-25" },
+            { label: "Boxing Day",         date: "2026-12-28" }
+        ],
+        "QLD": [
+            { label: "New Year's Day",     date: "2026-01-01" },
+            { label: "Australia Day",      date: "2026-01-26" },
+            { label: "Good Friday",        date: "2026-04-03" },
+            { label: "Easter Saturday",    date: "2026-04-04" },
+            { label: "Easter Monday",      date: "2026-04-06" },
+            { label: "Anzac Day",          date: "2026-04-25" },
+            { label: "Labour Day",         date: "2026-05-04" },
+            { label: "King's Birthday",    date: "2026-10-12" },
+            { label: "Christmas Day",      date: "2026-12-25" },
+            { label: "Boxing Day",         date: "2026-12-28" }
+        ],
+        "WA": [
+            { label: "New Year's Day",     date: "2026-01-01" },
+            { label: "Australia Day",      date: "2026-01-26" },
+            { label: "Labour Day",         date: "2026-03-02" },
+            { label: "Good Friday",        date: "2026-04-03" },
+            { label: "Easter Monday",      date: "2026-04-06" },
+            { label: "Anzac Day",          date: "2026-04-25" },
+            { label: "Western Australia Day", date: "2026-06-01" },
+            { label: "King's Birthday",    date: "2026-09-28" },
+            { label: "Christmas Day",      date: "2026-12-25" },
+            { label: "Boxing Day",         date: "2026-12-28" }
+        ],
+        "SA": [
+            { label: "New Year's Day",     date: "2026-01-01" },
+            { label: "Australia Day",      date: "2026-01-26" },
+            { label: "Adelaide Cup",       date: "2026-03-09" },
+            { label: "Good Friday",        date: "2026-04-03" },
+            { label: "Easter Saturday",    date: "2026-04-04" },
+            { label: "Easter Sunday",      date: "2026-04-05" },
+            { label: "Easter Monday",      date: "2026-04-06" },
+            { label: "Anzac Day",          date: "2026-04-25" },
+            { label: "King's Birthday",    date: "2026-06-08" },
+            { label: "Labour Day",         date: "2026-10-05" },
+            { label: "Christmas Day",      date: "2026-12-25" },
+            { label: "Proclamation Day",   date: "2026-12-28" }
+        ],
+        "TAS": [
+            { label: "New Year's Day",     date: "2026-01-01" },
+            { label: "Australia Day",      date: "2026-01-26" },
+            { label: "Eight Hours Day",    date: "2026-03-09" },
+            { label: "Good Friday",        date: "2026-04-03" },
+            { label: "Easter Saturday",    date: "2026-04-04" },
+            { label: "Easter Monday",      date: "2026-04-06" },
+            { label: "Easter Tuesday",     date: "2026-04-07" },
+            { label: "Anzac Day",          date: "2026-04-25" },
+            { label: "King's Birthday",    date: "2026-06-08" },
+            { label: "Christmas Day",      date: "2026-12-25" },
+            { label: "Boxing Day",         date: "2026-12-28" }
+        ],
+        "ACT": [
+            { label: "New Year's Day",     date: "2026-01-01" },
+            { label: "Australia Day",      date: "2026-01-26" },
+            { label: "Canberra Day",       date: "2026-03-09" },
+            { label: "Good Friday",        date: "2026-04-03" },
+            { label: "Easter Saturday",    date: "2026-04-04" },
+            { label: "Easter Monday",      date: "2026-04-06" },
+            { label: "Anzac Day",          date: "2026-04-25" },
+            { label: "Reconciliation Day", date: "2026-05-25" },
+            { label: "King's Birthday",    date: "2026-06-08" },
+            { label: "Labour Day",         date: "2026-10-05" },
+            { label: "Christmas Day",      date: "2026-12-25" },
+            { label: "Boxing Day",         date: "2026-12-28" }
+        ],
+        "NT": [
+            { label: "New Year's Day",     date: "2026-01-01" },
+            { label: "Australia Day",      date: "2026-01-26" },
+            { label: "Good Friday",        date: "2026-04-03" },
+            { label: "Easter Saturday",    date: "2026-04-04" },
+            { label: "Easter Sunday",      date: "2026-04-05" },
+            { label: "Easter Monday",      date: "2026-04-06" },
+            { label: "Anzac Day",          date: "2026-04-25" },
+            { label: "King's Birthday",    date: "2026-06-08" },
+            { label: "Picnic Day",         date: "2026-08-03" },
+            { label: "Christmas Day",      date: "2026-12-25" },
+            { label: "Boxing Day",         date: "2026-12-28" }
+        ]
+    },
+    "2027": {
+        "NSW": [
+            { label: "New Year's Day",     date: "2027-01-01" },
+            { label: "Australia Day",      date: "2027-01-26" },
+            { label: "Good Friday",        date: "2027-03-26" },
+            { label: "Easter Saturday",    date: "2027-03-27" },
+            { label: "Easter Monday",      date: "2027-03-29" },
+            { label: "Anzac Day",          date: "2027-04-26" },
+            { label: "King's Birthday",    date: "2027-06-14" },
+            { label: "Bank Holiday",       date: "2027-08-02" },
+            { label: "Christmas Day",      date: "2027-12-27" },
+            { label: "Boxing Day",         date: "2027-12-28" }
+        ],
+        "VIC": [
+            { label: "New Year's Day",     date: "2027-01-01" },
+            { label: "Australia Day",      date: "2027-01-26" },
+            { label: "Labour Day",         date: "2027-03-08" },
+            { label: "Good Friday",        date: "2027-03-26" },
+            { label: "Easter Saturday",    date: "2027-03-27" },
+            { label: "Easter Monday",      date: "2027-03-29" },
+            { label: "Anzac Day",          date: "2027-04-26" },
+            { label: "King's Birthday",    date: "2027-06-14" },
+            { label: "Melbourne Cup Day",  date: "2027-11-02" },
+            { label: "Christmas Day",      date: "2027-12-27" },
+            { label: "Boxing Day",         date: "2027-12-28" }
+        ],
+        "QLD": [
+            { label: "New Year's Day",     date: "2027-01-01" },
+            { label: "Australia Day",      date: "2027-01-26" },
+            { label: "Good Friday",        date: "2027-03-26" },
+            { label: "Easter Saturday",    date: "2027-03-27" },
+            { label: "Easter Monday",      date: "2027-03-29" },
+            { label: "Anzac Day",          date: "2027-04-26" },
+            { label: "Labour Day",         date: "2027-05-03" },
+            { label: "King's Birthday",    date: "2027-10-11" },
+            { label: "Christmas Day",      date: "2027-12-27" },
+            { label: "Boxing Day",         date: "2027-12-28" }
+        ],
+        "WA": [
+            { label: "New Year's Day",     date: "2027-01-01" },
+            { label: "Australia Day",      date: "2027-01-26" },
+            { label: "Labour Day",         date: "2027-03-01" },
+            { label: "Good Friday",        date: "2027-03-26" },
+            { label: "Easter Monday",      date: "2027-03-29" },
+            { label: "Anzac Day",          date: "2027-04-26" },
+            { label: "Western Australia Day", date: "2027-06-07" },
+            { label: "King's Birthday",    date: "2027-09-27" },
+            { label: "Christmas Day",      date: "2027-12-27" },
+            { label: "Boxing Day",         date: "2027-12-28" }
+        ],
+        "SA": [
+            { label: "New Year's Day",     date: "2027-01-01" },
+            { label: "Australia Day",      date: "2027-01-26" },
+            { label: "Adelaide Cup",       date: "2027-03-08" },
+            { label: "Good Friday",        date: "2027-03-26" },
+            { label: "Easter Saturday",    date: "2027-03-27" },
+            { label: "Easter Sunday",      date: "2027-03-28" },
+            { label: "Easter Monday",      date: "2027-03-29" },
+            { label: "Anzac Day",          date: "2027-04-26" },
+            { label: "King's Birthday",    date: "2027-06-14" },
+            { label: "Labour Day",         date: "2027-10-04" },
+            { label: "Christmas Day",      date: "2027-12-27" },
+            { label: "Proclamation Day",   date: "2027-12-28" }
+        ],
+        "TAS": [
+            { label: "New Year's Day",     date: "2027-01-01" },
+            { label: "Australia Day",      date: "2027-01-26" },
+            { label: "Eight Hours Day",    date: "2027-03-08" },
+            { label: "Good Friday",        date: "2027-03-26" },
+            { label: "Easter Saturday",    date: "2027-03-27" },
+            { label: "Easter Monday",      date: "2027-03-29" },
+            { label: "Easter Tuesday",     date: "2027-03-30" },
+            { label: "Anzac Day",          date: "2027-04-26" },
+            { label: "King's Birthday",    date: "2027-06-14" },
+            { label: "Christmas Day",      date: "2027-12-27" },
+            { label: "Boxing Day",         date: "2027-12-28" }
+        ],
+        "ACT": [
+            { label: "New Year's Day",     date: "2027-01-01" },
+            { label: "Australia Day",      date: "2027-01-26" },
+            { label: "Canberra Day",       date: "2027-03-08" },
+            { label: "Good Friday",        date: "2027-03-26" },
+            { label: "Easter Saturday",    date: "2027-03-27" },
+            { label: "Easter Monday",      date: "2027-03-29" },
+            { label: "Anzac Day",          date: "2027-04-26" },
+            { label: "Reconciliation Day", date: "2027-05-31" },
+            { label: "King's Birthday",    date: "2027-06-14" },
+            { label: "Labour Day",         date: "2027-10-04" },
+            { label: "Christmas Day",      date: "2027-12-27" },
+            { label: "Boxing Day",         date: "2027-12-28" }
+        ],
+        "NT": [
+            { label: "New Year's Day",     date: "2027-01-01" },
+            { label: "Australia Day",      date: "2027-01-26" },
+            { label: "Good Friday",        date: "2027-03-26" },
+            { label: "Easter Saturday",    date: "2027-03-27" },
+            { label: "Easter Sunday",      date: "2027-03-28" },
+            { label: "Easter Monday",      date: "2027-03-29" },
+            { label: "Anzac Day",          date: "2027-04-26" },
+            { label: "King's Birthday",    date: "2027-06-14" },
+            { label: "Picnic Day",         date: "2027-08-02" },
+            { label: "Christmas Day",      date: "2027-12-27" },
+            { label: "Boxing Day",         date: "2027-12-28" }
+        ]
+    }
+};
+
+// ================================================================
+// APP
+// ================================================================
+const LAST_UPDATED = "9 October 2026";
+const MONTH_NAMES  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONTH_SHORT  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DAY_NAMES    = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+const currentYear  = new Date().getFullYear();
+const years        = [currentYear - 1, currentYear, currentYear + 1];
+let selectedYear   = currentYear;
+let selectedState  = '';
+
+// ── INIT ──────────────────────────────────────────────────────
+function init() {
+    // Year buttons
+    const yearButtonsEl = document.getElementById('yearButtons');
+    years.forEach(y => {
+        const btn = document.createElement('button');
+        btn.className = 'year-btn' + (y === currentYear ? ' active' : '');
+        btn.textContent = y;
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedYear = y;
+        });
+        yearButtonsEl.appendChild(btn);
+    });
+
+    // Restore saved state and auto-render
+    const saved = localStorage.getItem('ahw_last_state');
+    if (saved && ['NSW','VIC','QLD','WA','SA','TAS','ACT','NT'].includes(saved)) {
+        document.getElementById('stateSelect').value = saved;
+        selectedState = saved;
+        render();
+    }
+
+    document.getElementById('showMeBtn').addEventListener('click', () => {
+        const sel = document.getElementById('stateSelect').value;
+        if (!sel) { showMessage('Please select a state or territory.'); return; }
+        selectedState = sel;
+        localStorage.setItem('ahw_last_state', sel);
+        render();
+    });
+
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+    document.getElementById('footerLine').textContent =
+        'Data last updated: ' + LAST_UPDATED + ' · Sources: State education departments & Fair Work Ombudsman.';
+}
+
+function showMessage(msg) {
+    const el = document.getElementById('message');
+    el.textContent = msg;
+    el.classList.remove('hidden');
+    setTimeout(() => el.classList.add('hidden'), 4000);
+}
+
+// ── RENDER ────────────────────────────────────────────────────
+function render() {
+    const yearStr   = String(selectedYear);
+    const state     = selectedState;
+    const schoolData = SCHOOL_HOLIDAYS[yearStr]?.[state];
+    const pubData    = PUBLIC_HOLIDAYS[yearStr]?.[state];
+
+    if (!schoolData) {
+        showMessage('No data available for ' + state + ' ' + yearStr + '. Please try another year.');
+        return;
+    }
+
+    const schoolPeriods = schoolData.periods;
+    const pubHolidays   = pubData || [];
+    const stateName     = schoolData.name;
+
+    // Build a Set of public holiday date strings for O(1) lookup
+    const pubSet = new Set(pubHolidays.map(h => h.date));
+    // Build a Set of school holiday date strings
+    const schoolSet = buildSchoolSet(schoolPeriods);
+
+    // Print header
+    document.getElementById('printTitle').textContent   = 'AussieHolidayWatch — ' + stateName + ' ' + yearStr;
+    document.getElementById('printSubtitle').textContent = 'School Holidays & Public Holidays';
+    document.getElementById('printUpdated').textContent  = 'Data last updated: ' + LAST_UPDATED + ' · Verify with state education department & government websites.';
+
+    // Calendar title
+    const titleEl = document.getElementById('calendarTitle');
+    titleEl.textContent = stateName + ' — ' + yearStr;
+    titleEl.classList.remove('hidden');
+
+    // Calendar
+    const calEl = document.getElementById('calendar');
+    calEl.innerHTML = '';
+    const todayStr = new Date().toISOString().slice(0, 10);
+    for (let m = 0; m < 12; m++) {
+        calEl.appendChild(buildMonth(parseInt(yearStr), m, schoolSet, pubSet, todayStr));
+    }
+    calEl.classList.remove('hidden');
+
+    // Legend + holiday list
+    document.getElementById('legend').classList.remove('hidden');
+    renderHolidayList(schoolPeriods, pubHolidays, yearStr);
+
+    // Print button
+    document.getElementById('printBtn').classList.remove('hidden');
+}
+
+function buildSchoolSet(periods) {
+    const s = new Set();
+    periods.forEach(p => {
+        let d = new Date(p.start + 'T00:00:00');
+        const end = new Date(p.end + 'T00:00:00');
+        while (d <= end) {
+            s.add(d.toISOString().slice(0, 10));
+            d.setDate(d.getDate() + 1);
+        }
+    });
+    return s;
+}
+
+function buildMonth(year, month, schoolSet, pubSet, todayStr) {
+    const div = document.createElement('div');
+    div.className = 'month';
+
+    const hdr = document.createElement('div');
+    hdr.className = 'month-header';
+    hdr.textContent = MONTH_NAMES[month];
+    div.appendChild(hdr);
+
+    const grid = document.createElement('div');
+    grid.className = 'month-grid';
+
+    // Day name headers
+    DAY_NAMES.forEach(d => {
+        const dh = document.createElement('div');
+        dh.className = 'day-header';
+        dh.textContent = d;
+        grid.appendChild(dh);
+    });
+
+    // Leading empty cells (Mon-based week)
+    const firstDow = new Date(year, month, 1).getDay(); // 0=Sun
+    const offset   = (firstDow + 6) % 7;
+    for (let i = 0; i < offset; i++) {
+        const e = document.createElement('div');
+        e.className = 'day empty';
+        grid.appendChild(e);
+    }
+
+    // Days
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = year + '-' +
+            String(month + 1).padStart(2, '0') + '-' +
+            String(d).padStart(2, '0');
+        const dow      = new Date(year, month, d).getDay();
+        const isWeekend = (dow === 0 || dow === 6);
+        const isSchool  = schoolSet.has(dateStr);
+        const isPub     = pubSet.has(dateStr);
+        const isToday   = (dateStr === todayStr);
+
+        const cell = document.createElement('div');
+        const classes = ['day'];
+        if (isWeekend) classes.push('weekend');
+        if (isSchool)  classes.push('school-holiday');
+        if (isPub)     classes.push('public-holiday');
+        if (isToday)   classes.push('today');
+        cell.className = classes.join(' ');
+        cell.textContent = d;
+        grid.appendChild(cell);
+    }
+
+    div.appendChild(grid);
+    return div;
+}
+
+// ── HOLIDAY LIST ──────────────────────────────────────────────
+function renderHolidayList(schoolPeriods, pubHolidays, year) {
+    // School periods
+    const schoolEl = document.getElementById('schoolPeriodsList');
+    schoolEl.innerHTML = '';
+    schoolPeriods.forEach(p => {
+        schoolEl.appendChild(makePeriodItem(p.label, p.start, p.end));
+    });
+
+    // Public holidays
+    const pubEl = document.getElementById('publicHolidaysList');
+    pubEl.innerHTML = '';
+    pubHolidays.forEach(h => {
+        pubEl.appendChild(makePHItem(h.label, h.date));
+    });
+
+    document.getElementById('holidayList').classList.remove('hidden');
+}
+
+function makePeriodItem(label, start, end) {
+    const div = document.createElement('div');
+    div.className = 'period-item';
+    div.innerHTML = '<span class="period-name">' + label + '</span>' +
+                    '<span class="period-dates">' + fmtDate(start) + ' – ' + fmtDate(end) + '</span>';
+    return div;
+}
+
+function makePHItem(label, date) {
+    const div = document.createElement('div');
+    div.className = 'period-item';
+    div.innerHTML = '<span class="period-name">' + label + '</span>' +
+                    '<span class="period-dates">' + fmtDate(date) + '</span>';
+    return div;
+}
+
+function fmtDate(iso) {
+    const [y, m, d] = iso.split('-').map(Number);
+    return d + ' ' + MONTH_SHORT[m - 1] + ' ' + y;
+}
+
+// ── GO ────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
